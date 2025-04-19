@@ -8,6 +8,8 @@ This repository contains a simple, standalone HTML-based calculator for experime
 
 This tool is designed for quick, basic experimentation and runs entirely in your web browser locally.
 
+For the most accurate calculations, advanced features (like Reverse calculators, Best mixes database), and the complete set of rules, please use the full online [Schedule 1 Calculator](https://schedule-1-calculator.com/?utm_source=github) ⬅️
+
 ![schedule 1 basic calculator screenshot](https://raw.githubusercontent.com/schedule1-calculator/schedule-1-calculator/refs/heads/main/schedule-1-calculator-basic.webp)
 
 ## Features
