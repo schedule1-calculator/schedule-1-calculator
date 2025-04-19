@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule 1 Pop Mixer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5a623;
+            --background-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --success-color: #50e3c2;
+            --danger-color: #e35050;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px 30px;
+            width: 100%;
+            max-width: 900px; /* Increased max-width */
+            margin-bottom: 30px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+        h1 { font-size: 2.2em; }
+        h2 { font-size: 1.6em; border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        select#product {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: #fff;
+            font-size: 1em;
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px auto;
+            cursor: pointer;
+        }
+
+        .substance-selection {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Gap between lists */
+            margin-bottom: 20px;
+            min-height: 250px; /* Ensure minimum height */
+        }
+
+        .substance-list {
+            width: 48%; /* Approx half width */
+            border: 1px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            background-color: #f9f9f9;
+            overflow-y: auto; /* Scroll if needed */
+            max-height: 300px; /* Limit height */
+        }
+
+        .substance-list h3 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 1.1em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .substance-item {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: grab;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            font-size: 0.95em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .substance-item:active { cursor: grabbing; }
+        .substance-item:hover { background-color: #eef; }
+        .substance-item span { font-weight: bold; color: var(--primary-color); }
+        .substance-item.dragging { opacity: 0.5; background-color: #ddd; }
+        .substance-item.over { border-top: 2px solid var(--secondary-color); }
+
+        #calculate {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--primary-color), #3a7ac0);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.3s ease, transform 0.1s ease;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #calculate:hover { background: linear-gradient(135deg, #3a7ac0, var(--primary-color)); }
+        #calculate:active { transform: scale(0.98); }
+
+        #results {
+            background-color: #e8f5e9; /* Light green background */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 25px;
+            border: 1px solid var(--success-color);
+        }
+        #results h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2e7d32; /* Dark green */
+            text-align: center;
+            border-bottom: 1px solid #a5d6a7;
+            padding-bottom: 8px;
+        }
+        #results p { margin: 8px 0; font-size: 1em; }
+        #results strong { color: #1b5e20; } /* Darker green for labels */
+        #result-effects span {
+             display: inline-block;
+             background-color: var(--primary-color);
+             color: white;
+             padding: 3px 8px;
+             margin: 2px;
+             border-radius: 4px;
+             font-size: 0.9em;
+        }
+         #result-effects.no-effects span {
+            background-color: #aaa;
+            color: #fff;
+        }
+
+
+        .recommendation {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff3e0; /* Light orange background */
+            border: 1px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: var(--shadow);
+        }
+        .recommendation p { margin-bottom: 10px; }
+        .recommendation a {
+            color: #ef6c00; /* Dark orange */
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .recommendation a:hover { color: #e65100; text-decoration: underline; }
+
+        .placeholder {
+            background-color: #e0e0e0;
+            height: 40px; /* Match item height */
+            border-radius: 4px;
+            margin-bottom: 8px;
+            border: 2px dashed #bdbdbd;
+        }
+
+        /* Limit message */
+        #limit-message {
+            color: var(--danger-color);
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            height: 1em; /* Reserve space */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <h1>Schedule 1 Mixer</h1>
+        <h2>Configure Your Mix</h2>
+
+        <div>
+            <label for="product">Select Base Product:</label>
+            <select id="product"></select>
+        </div>
+
+        <label>Add Substances (Drag & Drop to Mix/Reorder - Max 8):</label>
+        <div class="substance-selection">
+            <div class="substance-list" id="available-substances">
+                <h3>Available Substances</h3>
+                </div>
+            <div class="substance-list" id="selected-substances" ondragover="allowDrop(event)" ondrop="drop(event)" ondragleave="dragLeave(event)">
+                 <h3>Selected Mix (Drag to Reorder)</h3>
+                 <div id="limit-message"></div>
+                 </div>
+        </div>
+
+
+        <button id="calculate">Calculate Mix</button>
+
+        <div id="results">
+            <h3>Mix Results</h3>
+            <p><strong>Effects:</strong> <span id="result-effects"><span>---</span></span></p>
+            <p><strong>Total Cost:</strong> $<span id="result-cost">---</span></p>
+            <p><strong>Est. Sell Price:</strong> $<span id="result-sellPrice">---</span></p>
+            <p><strong>Est. Profit:</strong> $<span id="result-profit">---</span></p>
+            <p><strong>Profit Margin:</strong> <span id="result-profitMargin">---</span>%</p>
+            <p><strong>Addiction:</strong> <span id="result-addiction">---</span>%</p>
+        </div>
+    </div>
+
+     <div class="recommendation">
+        <p>🧪 Looking for more power?</p>
+        <p>
+            For advanced features like reverse calculators, best mixes database, detailed rule interactions, and precise calculations, use the full online tool:
+        </p>
+        <p>
+            <a href="https://schedule-1-calculator.com/?utm_source=github" target="_blank" rel="dofollow">Visit the Schedule 1 Advanced Calculator</a>
+        </p>
+    </div>
+
+    <script>
+        // --- Data (Keep as is) ---
+        const products = {
+          'OG Kush': { price: 35, effects: ['Ca'], abbreviation: 'OH' },
+          'Sour Diesel': { price: 35, effects: ['Re'], abbreviation: 'SL' },
+          'Green Crack': { price: 35, effects: ['En'], abbreviation: 'GK' },
+          'Grandaddy Purple': { price: 35, effects: ['Se'], abbreviation: 'GE' },
+          'Meth': { price: 70, effects: [], abbreviation: 'MH' },
+          'Cocaine': { price: 150, effects: [], abbreviation: 'CE' },
+        };
+        const substances = {
+          'Cuke': { abbreviation: 'A', rank: '1', price: 2, effect: ['En'] },
+          'Flu Medicine': { abbreviation: 'B', rank: '4', price: 5, effect: ['Se'] },
+          'Gasoline': { abbreviation: 'C', rank: '5', price: 5, effect: ['To'] },
+          'Donut': { abbreviation: 'D', rank: '1', price: 3, effect: ['Cd'] },
+          'Energy Drink': { abbreviation: 'E', rank: '6', price: 6, effect: ['At'] },
+          'Mouth Wash': { abbreviation: 'F', rank: '3', price: 4, effect: ['Ba'] },
+          'Motor Oil': { abbreviation: 'G', rank: '7', price: 6, effect: ['Sl'] },
+          'Banana': { abbreviation: 'H', rank: '1', price: 2, effect: ['Gi'] },
+          'Chili': { abbreviation: 'I', rank: '9', price: 7, effect: ['Sp'] },
+          'Iodine': { abbreviation: 'J', rank: '11', price: 8, effect: ['Je'] },
+          'Paracetamol': { abbreviation: 'K', rank: '1', price: 3, effect: ['Sn'] },
+          'Viagra': { abbreviation: 'L', rank: '2', price: 4, effect: ['Tt'] },
+          'Horse Semen': { abbreviation: 'M', rank: '13', price: 9, effect: ['Lf'] },
+          'Mega Bean': { abbreviation: 'N', rank: '8', price: 7, effect: ['Fo'] },
+          'Addy': { abbreviation: 'O', rank: '12', price: 9, effect: ['Tp'] },
+          'Battery': { abbreviation: 'P', rank: '10', price: 8, effect: ['Be'] },
+        };
+        const effectsData = { // Added full names here
+            Ca: { name: 'Calming', price: 0.1, addiction: 0 },
+            Re: { name: 'Refreshing', price: 0.14, addiction: 0.104 },
+            En: { name: 'Energizing', price: 0.22, addiction: 0.34 },
+            Se: { name: 'Sedating', price: 0.26, addiction: 0 },
+            Be: { name: 'Bright-Eyed', price: 0.4, addiction: 0.2 },
+            Cd: { name: 'Calorie-Dense', price: 0.28, addiction: 0.1 },
+            Eu: { name: 'Euphoric', price: 0.18, addiction: 0.235 },
+            To: { name: 'Toxic', price: 0, addiction: 0 },
+            At: { name: 'Athletic', price: 0.32, addiction: 0.607 },
+            Ba: { name: 'Balding', price: 0.3, addiction: 0 },
+            Ag: { name: 'Anti-Gravity', price: 0.54, addiction: 0.611 },
+            Mu: { name: 'Munchies', price: 0.12, addiction: 0.096 },
+            Sl: { name: 'Slippery', price: 0.34, addiction: 0.309 },
+            Gi: { name: 'Gingeritis', price: 0.2, addiction: 0 },
+            Sn: { name: 'Sneaky', price: 0.24, addiction: 0.327 },
+            Tp: { name: 'Thought-Provoking', price: 0.44, addiction: 0.37 },
+            Sp: { name: 'Spicy', price: 0.38, addiction: 0.665 },
+            Pa: { name: 'Paranoia', price: 0, addiction: 0 },
+            Tt: { name: 'Tropic Thunder', price: 0.46, addiction: 0.803 },
+            Gl: { name: 'Glowing', price: 0.48, addiction: 0.472 },
+            Cy: { name: 'Cyclopean', price: 0.56, addiction: 0.1 },
+            Fo: { name: 'Foggy', price: 0.36, addiction: 0.1 },
+            Ex: { name: 'Explosive', price: 0, addiction: 0 },
+            La: { name: 'Laxative', price: 0, addiction: 0.1 },
+            Lf: { name: 'Long Faced', price: 0.52, addiction: 0.607 },
+            Je: { name: 'Jennerising', price: 0.42, addiction: 0.343 },
+            El: { name: 'Electrifying', price: 0.5, addiction: 0.235 },
+            Di: { name: 'Disorienting', price: 0, addiction: 0 },
+            Sc: { name: 'Schizophrenia', price: 0, addiction: 0 },
+            Si: { name: 'Seizure-Inducing', price: 0, addiction: 0 },
+            Zo: { name: 'Zombifying', price: 0.58, addiction: 0.598 },
+            Fc: { name: 'Focused', price: 0.16, addiction: 0.104 },
+            Sm: { name: 'Smelly', price: 0, addiction: 0 },
+            Sh: { name: 'Shrinking', price: 0.6, addiction: 0.336 },
+        };
+        const simpleRules = {
+            'Flu Medicine': { ifPresent: ['Ca'], replace: { Ca: 'Be' } },
+            'Cuke': { ifPresent: ['Eu'], replace: { Eu: 'La' } },
+            'Gasoline': { ifPresent: ['En'], replace: { En: 'Eu'} },
+        };
+        const MAX_SUBSTANCES = 8;
+
+        // --- UI Elements ---
+        const productSelect = document.getElementById('product');
+        const availableSubstancesDiv = document.getElementById('available-substances');
+        const selectedSubstancesDiv = document.getElementById('selected-substances');
+        const calculateButton = document.getElementById('calculate');
+        const resultsDiv = document.getElementById('results');
+        const limitMessageDiv = document.getElementById('limit-message');
+
+        // --- Populate Products ---
+        Object.keys(products).forEach(prodName => {
+            const option = document.createElement('option');
+            option.value = prodName;
+            option.textContent = prodName;
+            productSelect.appendChild(option);
+        });
+
+        // --- Populate Available Substances ---
+        function renderAvailableSubstances() {
+            availableSubstancesDiv.innerHTML = '<h3>Available Substances</h3>'; // Clear existing
+            const selectedSubstanceNames = new Set(
+                Array.from(selectedSubstancesDiv.querySelectorAll('.substance-item')).map(item => item.dataset.substanceName)
+            );
+
+            Object.entries(substances).forEach(([subName, subData]) => {
+                 if (!selectedSubstanceNames.has(subName)) { // Only show if not already selected
+                    const item = document.createElement('div');
+                    item.classList.add('substance-item');
+                    item.draggable = true;
+                    item.id = `avail-${subName.replace(/\s+/g, '-')}`; // Unique ID
+                    item.dataset.substanceName = subName;
+                    item.textContent = `${subName} `;
+                    const priceSpan = document.createElement('span');
+                    priceSpan.textContent = ` ($${subData.price})`;
+                    item.appendChild(priceSpan);
+
+                    item.addEventListener('dragstart', dragStart);
+                    availableSubstancesDiv.appendChild(item);
+                }
+            });
+        }
+
+         // --- Drag and Drop Variables ---
+        let draggedItem = null;
+        let placeholder = document.createElement('div');
+        placeholder.classList.add('placeholder');
+
+
+        // --- Drag and Drop Functions ---
+        function dragStart(event) {
+            draggedItem = event.target;
+            event.dataTransfer.setData('text/plain', event.target.id);
+            setTimeout(() => {
+                 // check if moving to selected list and if list is full
+                const selectedCount = selectedSubstancesDiv.querySelectorAll('.substance-item').length;
+                 if (selectedCount >= MAX_SUBSTANCES && !selectedSubstancesDiv.contains(draggedItem)) {
+                      // Don't hide if trying to add to a full list
+                 } else {
+                    draggedItem.style.display = 'none'; // Hide original while dragging
+                 }
+            }, 0);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            const targetList = event.currentTarget;
+            if (targetList.id === 'selected-substances') {
+                 const selectedCount = targetList.querySelectorAll('.substance-item').length;
+                 // Allow drop if the list is not full OR if the item came from the selected list itself (reordering)
+                  if (selectedCount < MAX_SUBSTANCES || (draggedItem && targetList.contains(draggedItem))) {
+                     targetList.style.backgroundColor = '#e0ffe0'; // Highlight drop zone
+                     updatePlaceholder(event);
+                 } else {
+                     event.dataTransfer.dropEffect = 'none'; // Indicate no drop allowed
+                 }
+            } else if (targetList.id === 'available-substances') {
+                 targetList.style.backgroundColor = '#e0f2f7';
+                 updatePlaceholder(event); // Allow dropping back
+            }
+
+        }
+
+        function updatePlaceholder(event) {
+            const list = event.currentTarget;
+            const mouseY = event.clientY;
+            const items = Array.from(list.querySelectorAll('.substance-item:not(.dragging)'));
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                const distance = Math.abs(mouseY - midY);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            // Insert placeholder before the closest item if mouse is above its midpoint, otherwise after
+            if (closestItem) {
+                 const rect = closestItem.getBoundingClientRect();
+                 if (mouseY < rect.top + rect.height / 2) {
+                    list.insertBefore(placeholder, closestItem);
+                 } else {
+                     list.insertBefore(placeholder, closestItem.nextSibling);
+                 }
+            } else {
+                 // If list is empty or mouse is below all items
+                 list.appendChild(placeholder);
+            }
+             placeholder.style.display = 'block';
+
+        }
+
+
+        function dragLeave(event) {
+            const list = event.currentTarget;
+            list.style.backgroundColor = ''; // Remove highlight
+             if (!list.contains(event.relatedTarget)) { // Prevent flicker when moving over items
+                 placeholder.style.display = 'none';
+             }
+        }
+
+
+        function drop(event) {
+            event.preventDefault();
+            const targetList = event.currentTarget; // The list where item is dropped
+            targetList.style.backgroundColor = ''; // Reset background
+            placeholder.style.display = 'none'; // Hide placeholder
+
+
+            const id = event.dataTransfer.getData('text/plain');
+            const originalItem = document.getElementById(id); // This might be null if item was already moved
+
+            // If originalItem is null, it means the element was moved and re-rendered.
+            // We need to recreate it based on the draggedItem reference.
+             let itemToMove = originalItem || draggedItem;
+
+             if (!itemToMove && draggedItem) { // Recreate if needed (e.g., moved from available)
+                const subName = draggedItem.dataset.substanceName;
+                 itemToMove = createSubstanceItem(subName, substances[subName]);
+             }
+
+
+            if (!itemToMove) return; // Should not happen, but safety check
+
+            // Check limit ONLY if dropping into selected list from available list
+            const selectedCount = selectedSubstancesDiv.querySelectorAll('.substance-item').length;
+            const isMovingToSelected = targetList.id === 'selected-substances';
+            const isFromAvailable = availableSubstancesDiv.contains(itemToMove) || !selectedSubstancesDiv.contains(itemToMove); // Heuristic
+
+            if (isMovingToSelected && isFromAvailable && selectedCount >= MAX_SUBSTANCES) {
+                limitMessageDiv.textContent = `Cannot add more than ${MAX_SUBSTANCES} substances!`;
+                itemToMove.style.display = 'flex'; // Make sure original is visible again if drop failed
+                 renderAvailableSubstances(); // Refresh available list if needed
+                return; // Prevent drop
+            }
+
+            // Insert item where placeholder was
+            if (placeholder.parentNode === targetList) {
+                 targetList.insertBefore(itemToMove, placeholder);
+            } else {
+                 targetList.appendChild(itemToMove); // Append if placeholder wasn't inserted correctly
+            }
+
+            itemToMove.style.display = 'flex'; // Ensure item is visible
+            draggedItem = null; // Reset dragged item
+
+            // Update lists
+            updateSubstanceListsUI();
+        }
+
+        function updateSubstanceListsUI() {
+            // Clear and re-render available list based on what's in selected
+            renderAvailableSubstances();
+            // Update limit message
+             const selectedCount = selectedSubstancesDiv.querySelectorAll('.substance-item').length;
+             limitMessageDiv.textContent = selectedCount >= MAX_SUBSTANCES ? `Maximum ${MAX_SUBSTANCES} substances reached.` : '';
+
+        }
+
+         function createSubstanceItem(subName, subData) {
+            const item = document.createElement('div');
+            item.classList.add('substance-item');
+            item.draggable = true;
+            item.id = `${selectedSubstancesDiv.id}-${subName.replace(/\s+/g, '-')}`; // Ensure unique ID within the list
+            item.dataset.substanceName = subName;
+            item.textContent = `${subName} `;
+            const priceSpan = document.createElement('span');
+            priceSpan.textContent = ` ($${subData.price})`;
+            item.appendChild(priceSpan);
+            item.addEventListener('dragstart', dragStart);
+             // Add listener to remove item if clicked within selected list
+             if (selectedSubstancesDiv.contains(item) || !availableSubstancesDiv.contains(item)) {
+                 item.addEventListener('click', () => {
+                     item.remove();
+                     updateSubstanceListsUI();
+                 });
+                 item.title = "Click to remove"; // Tooltip
+             }
+             return item;
+        }
+
+
+        // --- Initial Population ---
+        renderAvailableSubstances(); // Initial render
+
+
+        // --- Calculation Logic (Modified for Ordered List & Effect Names) ---
+        calculateButton.addEventListener('click', () => {
+            const selectedProductName = productSelect.value;
+            const selectedProductData = products[selectedProductName];
+
+            // Get substances from the 'selected-substances' list IN ORDER
+            const selectedSubstanceItems = selectedSubstancesDiv.querySelectorAll('.substance-item');
+            const selectedSubstanceNames = Array.from(selectedSubstanceItems).map(item => item.dataset.substanceName);
+
+            if (selectedSubstanceNames.length > MAX_SUBSTANCES) {
+                // This check might be redundant due to drop logic, but good failsafe
+                alert(`Error: More than ${MAX_SUBSTANCES} substances selected.`);
+                return;
+            }
+
+            // --- Simplified Mixing (Order respected for potential future complex rules) ---
+            let currentEffects = new Set(selectedProductData.effects);
+            let totalCost = 0;
+
+            // Iterate through selected substances IN ORDER
+            selectedSubstanceNames.forEach(subName => {
+                const subData = substances[subName];
+                if (!subData) return;
+
+                totalCost += subData.price;
+
+                // Apply Simplified Rules (Basic Replacement) - Check before adding base effect
+                const ruleSet = simpleRules[subName];
+                if (ruleSet && ruleSet.ifPresent.every(eff => currentEffects.has(eff))) {
+                    for (const [oldEffect, newEffect] of Object.entries(ruleSet.replace)) {
+                        if (currentEffects.has(oldEffect)) {
+                            currentEffects.delete(oldEffect);
+                            // Add new effect only if space allows (and not already present)
+                            if (currentEffects.size < MAX_SUBSTANCES && !currentEffects.has(newEffect)) {
+                                currentEffects.add(newEffect);
+                            }
+                        }
+                    }
+                }
+
+                // Add substance's base effect AFTER rules, if space allows
+                if (subData.effect) {
+                     subData.effect.forEach(eff => {
+                        if (currentEffects.size < MAX_SUBSTANCES && !currentEffects.has(eff)) {
+                            currentEffects.add(eff);
+                        }
+                     });
+                }
+            });
+
+            // 3. Final Calculations
+            const finalEffectsArray = Array.from(currentEffects).slice(0, MAX_SUBSTANCES); // Ensure max 8
+            let effectValue = 0;
+            let addictionValue = 0;
+
+            finalEffectsArray.forEach(effCode => {
+                const effect = effectsData[effCode];
+                if (effect) {
+                    effectValue += effect.price || 0;
+                    addictionValue += effect.addiction || 0;
+                }
+            });
+
+            const sellPrice = Math.round(selectedProductData.price * (1 + effectValue));
+            const profit = sellPrice - totalCost;
+            const profitMargin = sellPrice > 0 ? Math.round((profit / sellPrice) * 10000) / 100 : 0;
+            const addiction = Math.round(addictionValue * 100);
+
+            // --- Display Results (Using Effect Names) ---
+            const effectsSpan = document.getElementById('result-effects');
+            effectsSpan.innerHTML = ''; // Clear previous
+            if (finalEffectsArray.length > 0) {
+                effectsSpan.classList.remove('no-effects');
+                finalEffectsArray.forEach(effCode => {
+                    const effectName = effectsData[effCode]?.name || effCode; // Get name or fallback to code
+                    const effectBadge = document.createElement('span');
+                    effectBadge.textContent = effectName;
+                    effectsSpan.appendChild(effectBadge);
+                 });
+            } else {
+                 effectsSpan.classList.add('no-effects');
+                 const noEffectBadge = document.createElement('span');
+                 noEffectBadge.textContent = 'None';
+                 effectsSpan.appendChild(noEffectBadge);
+            }
+
+
+            document.getElementById('result-cost').textContent = totalCost;
+            document.getElementById('result-sellPrice').textContent = sellPrice;
+            document.getElementById('result-profit').textContent = profit;
+            document.getElementById('result-profitMargin').textContent = profitMargin.toFixed(2);
+            document.getElementById('result-addiction').textContent = addiction;
+        });
+
+    </script>
+
+</body>
+</html>
