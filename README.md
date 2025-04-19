@@ -8,6 +8,8 @@ This repository contains a simple, standalone HTML-based calculator for experime
 
 This tool is designed for quick, basic experimentation and runs entirely in your web browser locally.
 
+![schedule 1 basic calculator screenshot](https://raw.githubusercontent.com/schedule1-calculator/schedule-1-calculator/refs/heads/main/schedule-1-calculator-basic.webp)
+
 ## Features
 
 * Select from available base products (e.g., OG Kush, Meth).
